@@ -1,0 +1,165 @@
+'use client';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
+import { Heading } from '@/components/ui/heading';
+import { Separator } from '@/components/ui/separator';
+import { columns } from './columns';
+import { useEffect, useState } from 'react';
+import { UserTableData, UserListInfor } from '@/types/users';
+import { getAuthorizeUser } from '@/app/api/user/user.api';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink
+} from '@/components/ui/pagination';
+import { Input } from '@/components/ui/input';
+import { useSession } from 'next-auth/react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+export const UserClient = () => {
+  // Array of users
+  const [userList, setUserList] = useState<UserTableData[]>([]);
+
+  // Information of response which included an array of users
+  const [userListInfor, setUserListInfor] = useState<UserListInfor>();
+
+  const [currentPageNum, setCurrentPageNum] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<number>(1);
+  const session = useSession();
+  const handleNextPage = () => {
+    setCurrentPageNum(currentPageNum + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPageNum > 1) {
+      setCurrentPageNum(currentPageNum - 1);
+    }
+  };
+
+  const handlePageClick = () => {
+    setIsEdit(true);
+  };
+
+  const addInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let num = parseInt(e.target.value);
+    if (num < 0) {
+      num = -num;
+    }
+
+    if (num === 0) {
+      num = 1;
+    }
+
+    if (num > userListInfor?.totalPages!) {
+      num = userListInfor?.totalPages!;
+    }
+    setInputValue(num);
+  };
+
+  const enterInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (userListInfor !== null) {
+      if (e.code === 'Enter' && inputValue <= userListInfor?.totalPages!) {
+        setCurrentPageNum(inputValue);
+      }
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session.data !== null) {
+        try {
+          setIsLoading(true);
+          const response = await getAuthorizeUser(
+            10,
+            currentPageNum,
+            session.data.user?.token
+          );
+          setUserListInfor(response);
+          const formatData = response.items.map((item: UserTableData) => ({
+            ...item,
+            phoneNumber: item.phoneNumber ?? 'No data'
+          }));
+          setUserList(formatData);
+          // console.log(userList);
+        } catch (error) {
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+  }, [currentPageNum]);
+
+  return (
+    <>
+      <div className="flex items-start justify-between">
+        {isLoading ? (
+          <div className="flex h-14 flex-col justify-between">
+            <Skeleton className="h-8 w-[250px]" />
+            <Skeleton className="h-4 w-[250px]" />
+          </div>
+        ) : (
+          <Heading
+            title={`Users (${userListInfor?.totalCount})`}
+            description="Manage users (Client side table functionalities.)"
+          />
+        )}
+      </div>
+      <Separator />
+      <DataTable
+        isLoading={isLoading}
+        searchKey="username"
+        columns={columns}
+        data={userList}
+      />
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="space-x-2">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePreviousPage()}
+                  disabled={!userListInfor?.hasPreviousPage}
+                >
+                  Previous
+                </Button>
+              </PaginationItem>
+              <PaginationItem>
+                {isEdit ? (
+                  <div className="flex justify-end">
+                    <Input
+                      value={inputValue}
+                      onKeyDown={(e) => enterInput(e)}
+                      onChange={(e) => addInput(e)}
+                      className="w-[70px]"
+                      type="number"
+                    />
+                  </div>
+                ) : (
+                  <PaginationLink onClick={handlePageClick}>
+                    {currentPageNum}/{userListInfor?.totalPages}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+              <PaginationItem>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleNextPage()}
+                  disabled={!userListInfor?.hasNextPage}
+                >
+                  Next
+                </Button>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </div>
+    </>
+  );
+};
