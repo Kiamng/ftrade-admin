@@ -17,8 +17,10 @@ import { AddModerSchema } from '@/schemas';
 import { AddModer } from '@/app/(dashboard)/dashboard/moderator/actions/add-moderator';
 import { useSession } from 'next-auth/react';
 import { useToast } from '../ui/use-toast';
+import { Check } from 'lucide-react';
 // import FileUpload from '../file-upload';
 import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
 
 export const IMG_MAX_LIMIT = 3;
 

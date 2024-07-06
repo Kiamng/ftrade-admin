@@ -2,12 +2,14 @@ import { AddModerSchema } from '@/schemas';
 import axiosClient from '@/lib/axiosClient';
 import * as z from 'zod';
 import { UserListInfor } from '@/types/users';
+import { Account } from '@/types/account';
 
 const ENDPOINT = {
   GET_AUTHORIZE_USER: '/Account/GetAllAccount',
   GET_MODERATOR: '/Account/GetAllAccount',
   DELETE_USER: '/Account/DeleteAccount',
-  ADD_MODERATOR: '/Auth/Register'
+  ADD_MODERATOR: '/Auth/Register',
+  GET_USER_BY_ID: '/Account/GetAccountById'
 };
 
 export const getAuthorizeUser = async (
@@ -72,5 +74,17 @@ export const addModer = async (
     }
   );
   console.log(response.status);
+  return response.data;
+};
+
+export const getUserById = async (
+  id: string,
+  token: string
+): Promise<Account> => {
+  const response = await axiosClient.get(`${ENDPOINT.GET_USER_BY_ID}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   return response.data;
 };

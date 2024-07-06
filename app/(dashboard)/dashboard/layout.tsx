@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'GoadEdu User Management',
-  description: 'User mangement site'
+  description: 'User management site'
 };
 
 export default function DashboardLayout({
@@ -17,7 +17,7 @@ export default function DashboardLayout({
       <Header />
       <div className="flex h-screen overflow-hidden">
         <Sidebar />
-        <main className="w-full pt-16">{children}</main>
+        <main className="w-full overflow-y-auto pt-16">{children}</main>
       </div>
     </>
   );
