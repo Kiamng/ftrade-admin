@@ -23,7 +23,14 @@ export const getProductByStatus = async (
   );
   return response.data;
 };
-export const getProductById = async (id: string): Promise<Product> => {
-  const response = await axiosClient.get(`${END_POINT.GET_PRODUCT}?id=${id}`);
+export const getProductById = async (
+  id: string,
+  token: string
+): Promise<Product> => {
+  const response = await axiosClient.get(`${END_POINT.GET_PRODUCT}?id=${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   return response.data;
 };
