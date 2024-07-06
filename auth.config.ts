@@ -1,19 +1,23 @@
-import { NextAuthConfig } from 'next-auth';
-import CredentialProvider from 'next-auth/providers/credentials';
-import { login } from './app/api/auth/auth.api';
-import { LoginSchema } from './schemas';
+import type { NextAuthConfig } from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import Facebook from 'next-auth/providers/facebook';
+import Google from 'next-auth/providers/google';
 
-const authConfig = {
+import { LoginSchema } from '@/schemas';
+import { login } from '@/app/api/auth/auth.api';
+// import { toast } from "sonner";
+
+export default {
   providers: [
-    CredentialProvider({
-      credentials: {
-        email: {
-          type: 'text'
-        },
-        password: {
-          type: 'password'
-        }
-      },
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SCERET
+    }),
+    Facebook({
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET
+    }),
+    Credentials({
       async authorize(credentials) {
         try {
           const validatedFields = LoginSchema.safeParse(credentials);
@@ -25,48 +29,20 @@ const authConfig = {
             });
             const user = response.data;
             if (user) {
-              if (user.role.roleName === 'Admin' || 'Moderator') {
-                return user;
+              if (user.role.roleName === 'Admin') {
+                return null;
               }
+              return user;
             } else {
               return null;
             }
           }
         } catch (error) {
+          console.error(error);
           return null;
         }
       }
     })
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.userId = user.userId;
-        token.username = user.username;
-        token.fullname = user.fullname;
-        token.emailVerify = user.emailVerify;
-        token.role = user.role;
-        token.token = user.token;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.id = token.userId;
-        session.user.username = token.username;
-        session.user.name = token.fullname;
-        session.user.emailVerify = token.emailVerify;
-        session.user.role = token.role;
-        session.user.token = token.token;
-        session.user.fullname = token.fullname;
-      }
-      return session;
-    }
-  },
-  session: { strategy: 'jwt', maxAge: 60 * 60 * 24 * 7 },
-  pages: {
-    signIn: '/' //sigin page
-  }
+  secret: process.env.JWT_SCERET
 } satisfies NextAuthConfig;
-
-export default authConfig;

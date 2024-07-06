@@ -1,36 +1,24 @@
-export type UserType = {
-  userId: string;
-  username: string;
-  fullname: string;
-  email: string;
-  image: string;
-  emailVerify: boolean;
-  role: {
-    id: string;
-    roleName: string;
-  };
-  token: string;
-};
+import { Role } from './role';
 
 export type UserTableData = {
-  id: string;
-  username: string;
+  accountId: string;
+  role: Role;
   email: string;
+  passwordHash: string;
+  avatarUrl: string;
+  userName: string;
+  fullName: string;
   phoneNumber: string;
-  fullname: string;
-  roleName: string;
-  isConfirmEmail: boolean;
-  isDeleted: boolean;
+  joinDate: Date;
+  roleId: number;
+  denyRes: string;
+  status: string;
 };
 
 export type UserListInfor = {
-  currentPage: number;
-  totalPages: number;
+  totalItem: number;
   pageSize: number;
-  totalCount: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-  nextPageNumber: number;
-  previousPageNumber: number;
+  totalPages: number;
+  pageNumber: number;
   items: UserTableData[];
 };

@@ -13,15 +13,11 @@ export const AddModer = async (
     return { error: 'Invalid fields!' };
   }
 
-  const { email, username, fullname, phoneNumber } = validatedFields.data;
+  const { email, username, fullname, phoneNumber, password } =
+    validatedFields.data;
 
-  const newUserData = { email, username, fullname, phoneNumber };
+  const newUserData = { email, username, fullname, phoneNumber, password };
 
   const response = await addModer(newUserData, token);
-  // if (response.data.status === 400 || response.data.status === 404) {
-  //   return { error: response.data.message };
-  // }
-
-  // return { success: response.data.message };
   return response;
 };

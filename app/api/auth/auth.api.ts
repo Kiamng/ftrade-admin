@@ -4,14 +4,14 @@ import https from 'https';
 import * as z from 'zod';
 
 const ENDPOINT = {
-  LOGIN: '/auth/login'
+  LOGIN: '/Auth/Login'
 };
 
 export const login = async (values: z.infer<typeof LoginSchema>) => {
   const response = await axiosClient.post(
     ENDPOINT.LOGIN,
     {
-      username: values.email,
+      email: values.email,
       password: values.password
     },
     {
