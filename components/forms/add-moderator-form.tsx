@@ -37,7 +37,8 @@ export const AddModerForm: React.FC<ProductFormProps> = () => {
       email: '',
       fullname: '',
       username: '',
-      phoneNumber: ''
+      phoneNumber: '',
+      password: ''
     }
   });
 
@@ -45,6 +46,8 @@ export const AddModerForm: React.FC<ProductFormProps> = () => {
   const { toast } = useToast();
 
   const onSubmit = async (values: z.infer<typeof AddModerSchema>) => {
+    console.log(values);
+
     if (session.data !== null) {
       try {
         setIsPending(!isPending);
@@ -158,8 +161,26 @@ export const AddModerForm: React.FC<ProductFormProps> = () => {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter password"
+                          disabled={isPending}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-              <div className="mt-4 flex w-full justify-end">
+              <div className="mt-4 flex w-full justify-start">
                 <Button
                   type="submit"
                   disabled={isPending}

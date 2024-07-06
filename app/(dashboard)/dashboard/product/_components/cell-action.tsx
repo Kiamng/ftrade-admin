@@ -1,5 +1,5 @@
 'use client';
-import { deleteSubject } from '@/app/api/subject/subject.api';
+import { deleteUserById } from '@/app/api/user/user.api';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,15 +9,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { Subject } from '@/types/subject';
+import { Product } from '@/types/product';
 import { Edit, MoreHorizontal, Trash } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CellActionProps {
-  data: Subject;
+  data: Product;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -26,14 +25,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
 
   const session = useSession();
-  const onConfirm = async (subjectId: string) => {
+  const onConfirm = async (userId: string) => {
     setLoading(true);
     if (session.data !== null) {
       try {
-        const response = await deleteSubject(
-          subjectId,
-          session.data.user?.token as string
-        );
+        const response = await deleteUserById(userId, session.data.user?.token);
+
         return response;
       } catch (error) {
       } finally {
@@ -50,8 +47,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
         loading={loading}
-        id={data.id}
-        name={data.subjectName}
+        id={data.productId}
+        name={data.title}
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
@@ -63,10 +60,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-          <DropdownMenuItem>
-            <Link href={`/dashboard/subject/${data.id}`}>
-              <Edit className="mr-2 h-4 w-4" /> Update
-            </Link>
+          <DropdownMenuItem
+            onClick={() => router.push(`/dashboard/user/${data.productId}`)}
+          >
+            <Edit className="mr-2 h-4 w-4" /> Update
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 h-4 w-4" /> Delete

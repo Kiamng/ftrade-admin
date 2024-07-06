@@ -130,18 +130,9 @@ export const navItems: NavItem[] = [
     label: 'employee'
   },
   {
-    title: 'Subject management',
-    href: '/dashboard/subject',
-    icon: 'book',
-    label: 'employee'
-  }
-];
-
-export const moderNavItems: NavItem[] = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: 'dashboard',
-    label: 'Dashboard'
+    title: 'Pending product',
+    href: '/dashboard/product',
+    icon: 'product',
+    label: 'product'
   }
 ];

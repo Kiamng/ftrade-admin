@@ -2,9 +2,10 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserTableData } from '@/types/users';
+import { Product } from '@/types/product';
+import { format } from 'date-fns';
 
-export const columns: ColumnDef<UserTableData>[] = [
+export const columns: ColumnDef<Product>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -25,25 +26,41 @@ export const columns: ColumnDef<UserTableData>[] = [
     enableHiding: false
   },
   {
-    accessorKey: 'fullName',
-    header: 'Fullname'
+    accessorKey: 'title',
+    header: 'Title'
   },
   {
-    accessorKey: 'userName',
-    header: 'Username'
+    id: 'category',
+    header: 'Category',
+    cell: ({ row }) => <span>{row.original.category.name}</span>
   },
   {
-    accessorKey: 'email',
-    header: 'Email'
+    id: 'city',
+    header: 'Campus',
+    cell: ({ row }) => <span>{row.original.city.name}</span>
   },
   {
-    id: 'role',
-    header: 'Role',
-    cell: ({ row }) => <span>{row.original.role.name}</span>
+    accessorKey: 'quantity',
+    header: 'Quantity'
+  },
+
+  {
+    id: 'genre',
+    header: 'Genre',
+    cell: ({ row }) => <span>{row.original.genre.name}</span>
   },
   {
-    accessorKey: 'phoneNumber',
-    header: 'Phonenumber'
+    accessorKey: 'price',
+    header: 'Price'
+  },
+  {
+    id: 'createdDate',
+    header: 'Created date',
+    cell: ({ row }) => (
+      <span>
+        {format(new Date(row.original.createdDate), 'HH:mm dd/MM/yyyy')}
+      </span>
+    )
   },
   {
     id: 'actions',
