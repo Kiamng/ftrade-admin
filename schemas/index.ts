@@ -28,16 +28,13 @@ export const AddModerSchema = z.object({
   })
 });
 
-export const ReviewSchema = z
-  .object({
-    action: z.enum(['Approve', 'Deny']),
-    denyReason: z.string().optional()
-  })
-  .refine(
-    (data) =>
-      data.action === 'Approve' || (data.action === 'Deny' && data.denyReason),
-    {
-      message: 'You must provide a reason if you deny',
-      path: ['denyReason']
-    }
-  );
+const ReviewSectionSchema = z.object({
+  action: z.enum(['Approve', 'Deny']),
+  denyReason: z.string().optional(),
+}).refine(data => data.action === 'Approve' || (data.action === 'Deny' && data.denyReason), {
+  message: 'You must provide a reason if you deny',
+  path: ['denyReason'],
+});
+
+export default ReviewSectionSchema;
+

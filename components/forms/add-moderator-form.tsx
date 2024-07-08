@@ -17,10 +17,8 @@ import { AddModerSchema } from '@/schemas';
 import { AddModer } from '@/app/(dashboard)/dashboard/moderator/actions/add-moderator';
 import { useSession } from 'next-auth/react';
 import { useToast } from '../ui/use-toast';
-import { Check } from 'lucide-react';
 // import FileUpload from '../file-upload';
 import { useRouter } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
 
 export const IMG_MAX_LIMIT = 3;
 
@@ -57,7 +55,7 @@ export const AddModerForm: React.FC<ProductFormProps> = () => {
           const response = await AddModer(values, session.data.user?.token);
           if (response.status == 200) {
             toast({
-              description: `${values.username} added successfully !`
+              description: `${values.username} added successfully ! `
             });
             router.push(`/dashboard/moderator`);
           } else {

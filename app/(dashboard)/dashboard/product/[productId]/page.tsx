@@ -53,7 +53,11 @@ const PendingDetailPage = ({ params }: PendingDetailPageProps) => {
       />
       <Separator />
       <ProductDetail creator={creator} product={product} />
-      <ReviewSection />
+      <ReviewSection
+        isDisplay={product?.isDisplay}
+        token={session.data!.user?.token as string}
+        productId={params.productId}
+      />
     </div>
   );
 };

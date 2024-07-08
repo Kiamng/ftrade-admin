@@ -1,10 +1,11 @@
-import axiosClient from '@/lib/axiosClient';
+import axiosClient, { axiosClientUpload } from '@/lib/axiosClient';
 import { Product, ProductList } from '@/types/product';
 
 export const END_POINT = {
   GET_BY_STATUS: '/Product/GetAllProduct?',
   CREATE_PRODUCT: '/Product/CreateProduct',
-  GET_PRODUCT: '/Product/GetProductById'
+  GET_PRODUCT: '/Product/GetProductById',
+  UPDATE_PRODUCT_STATUS: '/Product/UpdateStatusProduct'
 };
 
 export const getProductByStatus = async (
@@ -33,4 +34,27 @@ export const getProductById = async (
     }
   });
   return response.data;
+};
+
+export const updateProductStatus = async (
+  productId: string,
+  status: string,
+  denyReason: string,
+  isDisplay: string,
+  token: string
+) => {
+  const response = await axiosClient.put(
+    `${END_POINT.UPDATE_PRODUCT_STATUS}/id?id=${productId}`,
+    {
+      denyRes: denyReason,
+      status: status,
+      isDisplay: isDisplay
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.status;
 };
