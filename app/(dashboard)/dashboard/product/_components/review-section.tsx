@@ -1,4 +1,6 @@
-import * as React from 'react';
+'use client';
+
+import { updateProductStatus } from '@/app/api/product/product.apit';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -9,121 +11,126 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form';
+import { useToast } from '@/components/ui/use-toast';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-// Schema definition
-const ReviewSchema = z
-  .object({
-    action: z.enum(['Approve', 'Deny']),
-    denyReason: z.string().optional()
-  })
-  .refine(
-    (data) =>
-      data.action === 'Approve' || (data.action === 'Deny' && data.denyReason),
-    {
-      message: 'You must provide a reason if you deny',
-      path: ['denyReason']
+interface ReviewSectionProps {
+  isDisplay: string | undefined;
+  token: string | undefined;
+  productId: string | undefined;
+}
+
+const ReviewSection = ({ isDisplay, token, productId }: ReviewSectionProps) => {
+  const router = useRouter();
+  const [review, setReview] = useState<string>('');
+  const [denyReason, setDenyReason] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { toast } = useToast();
+
+  const onSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      setIsLoading(!isLoading);
+      if (review === 'Deny') {
+        if (denyReason.length === 0) {
+          toast({
+            description: `If you deny this pending product post, please select a reason`,
+            variant: 'destructive'
+          });
+          return;
+        } else {
+          const updateResponse = await updateProductStatus(
+            productId as string,
+            review,
+            denyReason,
+            isDisplay as string,
+            token as string
+          );
+          if (updateResponse === 200) {
+            toast({
+              description: `You have denied this pending product post !`
+            });
+            router.push(`/dashboard/product`);
+          } else {
+            toast({
+              description: `Updating pending product failed`,
+              variant: 'destructive'
+            });
+          }
+        }
+      } else {
+        const updateResponse = await updateProductStatus(
+          productId as string,
+          review,
+          denyReason,
+          isDisplay as string,
+          token as string
+        );
+        if (updateResponse === 200) {
+          toast({
+            description: `You have approved this pending product post`
+          });
+          router.push(`/dashboard/product`);
+        } else {
+          toast({
+            description: `Updating pending product failed`,
+            variant: 'destructive'
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-  );
-
-// Infer the schema type
-type ReviewFormValues = z.infer<typeof ReviewSchema>;
-
-const ReviewSection: React.FC = () => {
-  const form = useForm<ReviewFormValues>({
-    resolver: zodResolver(ReviewSchema),
-    defaultValues: {
-      action: 'Approve', // Provide a default value for action
-      denyReason: ''
-    }
-  });
-
-  const onSubmit = (values: ReviewFormValues) => {
-    console.log(values);
-  };
-
-  // Function to update form value and force re-render
-  const updateFormValue = (fieldName: keyof ReviewFormValues, value: any) => {
-    form.setValue(fieldName, value);
-    // Force re-render
-    form.trigger();
   };
 
   return (
-    <div className="flex w-full space-x-4">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-2/3 space-y-6"
-        >
-          <FormField
-            control={form.control}
-            name="denyReason"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Deny Reason</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="If deny, give a reason" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Denied reasons:</SelectLabel>
-                      <SelectItem value="Missing information">
-                        Missing information
-                      </SelectItem>
-                      <SelectItem value="Inappropriate words">
-                        Inappropriate words
-                      </SelectItem>
-                      <SelectItem value="Spamming product post">
-                        Spamming product post
-                      </SelectItem>
-                      <SelectItem value="Inappropriate image">
-                        Inappropriate image
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <input type="hidden" {...form.register('action')} />
-
-          <Button
-            type="button" // Change type to button to prevent form submission
-            className="w-[100px] bg-green-500 hover:bg-green-400"
-            onClick={() => updateFormValue('action', 'Approve')}
-          >
-            Approve
-          </Button>
-          <Button
-            type="button" // Change type to button to prevent form submission
-            className="w-[100px]"
-            variant={'destructive'}
-            onClick={() => updateFormValue('action', 'Deny')}
-          >
-            Deny
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <form onSubmit={onSubmit} className="flex w-full space-x-4">
+      <Select
+        onValueChange={(value) => setDenyReason(value)}
+        disabled={isLoading}
+      >
+        <SelectTrigger className="w-[300px]">
+          <SelectValue placeholder="If deny, give a reason" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Denied reasons :</SelectLabel>
+            <SelectItem value="Missing information">
+              Missing information
+            </SelectItem>
+            <SelectItem value="Inappropriate words">
+              Inappropriate words
+            </SelectItem>
+            <SelectItem value="Spamming product post">
+              Spamming product post
+            </SelectItem>
+            <SelectItem value="Inappropriate image">
+              Inappropriate image
+            </SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      <Button
+        disabled={isLoading}
+        type="submit"
+        className="w-[100px] bg-green-500 hover:bg-green-400"
+        onClick={() => setReview('Approve')}
+      >
+        Approve
+      </Button>
+      <Button
+        disabled={isLoading}
+        type="submit"
+        className="w-[100px]"
+        variant={'destructive'}
+        onClick={() => setReview('Deny')}
+      >
+        Deny
+      </Button>
+    </form>
   );
 };
 
