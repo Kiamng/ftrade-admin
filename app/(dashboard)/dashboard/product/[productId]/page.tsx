@@ -8,8 +8,6 @@ import { Product } from '@/types/product';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import ProductDetail from '../_components/product-detail';
-import { Check } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import ReviewSection from '../_components/review-section';
 
 interface PendingDetailPageProps {
