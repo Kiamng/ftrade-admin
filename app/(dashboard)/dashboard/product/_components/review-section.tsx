@@ -117,7 +117,7 @@ const ReviewSection = ({ isDisplay, token, productId }: ReviewSectionProps) => {
         disabled={isLoading}
         type="submit"
         className="w-[100px] bg-green-500 hover:bg-green-400"
-        onClick={() => setReview('Approve')}
+        onClick={() => setReview('Approved')}
       >
         Approve
       </Button>

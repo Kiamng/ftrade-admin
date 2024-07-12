@@ -66,7 +66,7 @@ const ProductDetail = ({ product, creator }: ProductDetailProps) => {
                 </p>
                 <p className="font-semibold">
                   Created at :
-                  <span className="font-normal">{formattedDate}</span>
+                  <span className="font-normal"> {formattedDate}</span>
                 </p>
               </div>
               <div className="w-full font-semibold">
