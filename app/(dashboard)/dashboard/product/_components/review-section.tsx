@@ -128,7 +128,7 @@ const ReviewSection = ({ isDisplay, token, productId }: ReviewSectionProps) => {
         variant={'destructive'}
         onClick={() => setReview('Deny')}
       >
-        Deny
+        Denyyyyyyy
       </Button>
     </form>
   );
