@@ -54,7 +54,7 @@ export function DataTable<TData, TValue>({
   return (
     <>
       {isLoading ? (
-        <Skeleton className="h-[500px] w-[1227px] rounded-xl" />
+        <Skeleton className="h-[500px] w-full rounded-xl" />
       ) : (
         <div className="space-y-4">
           <Input

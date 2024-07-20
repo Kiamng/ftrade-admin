@@ -17,8 +17,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const formSchema = z.object({
-  email: z.string(),
-  password: z.string()
+  email: z.string().min(1, 'Email is required'),
+  password: z.string().min(1, 'Password is required')
 });
 
 type UserFormValue = z.infer<typeof formSchema>;

@@ -29,10 +29,9 @@ export default {
             });
             const user = response.data;
             if (user) {
-              if (user.role.roleName === 'Admin') {
-                return null;
+              if (user.role.name === 'Admin' || 'Moderator') {
+                return user;
               }
-              return user;
             } else {
               return null;
             }
